@@ -1,0 +1,114 @@
+﻿@page
+@model EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Movie</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="MovieViewModel.Id" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="MovieViewModel.Title" class="control-label"></label>
+                <input asp-for="MovieViewModel.Title" class="form-control" />
+                <span asp-validation-for="MovieViewModel.Title" class="text-danger"></span>
+            </div>
+
+           
+            <div class="form-group">
+                <label asp-for="MovieViewModel.Director" class="control-label"></label>
+                <input asp-for="MovieViewModel.Director" class="form-control" />
+                <span asp-validation-for="MovieViewModel.Director" class="text-danger"></span>
+            </div>
+
+           
+            <div class="form-group">
+                <label asp-for="MovieViewModel.Genre" class="control-label"></label>
+                <input asp-for="MovieViewModel.Genre" class="form-control" />
+                <span asp-validation-for="MovieViewModel.Genre" class="text-danger"></span>
+            </div>
+
+            
+            <div class="form-group">
+                <label asp-for="MovieViewModel.Year" class="control-label"></label>
+                <input asp-for="MovieViewModel.Year" class="form-control" />
+                <span asp-validation-for="MovieViewModel.Year" class="text-danger"></span>
+            </div>
+
+           
+            <div class="form-group">
+                <label asp-for="MovieViewModel.Poster" class="control-label">Upload New Poster</label>
+                <input type="file" asp-for="MovieViewModel.Poster" class="form-control" onchange="previewFile()" />
+                <span asp-validation-for="MovieViewModel.Poster" class="text-danger"></span>
+            </div>
+
+            
+            <div class="form-group">
+                @if (!string.IsNullOrEmpty(Model.MovieViewModel.PosterPath))
+                {
+                    <img id="poster-preview" src="@Url.Content(Model.MovieViewModel.PosterPath)" alt="Current Poster" style="max-width: 300px; height: auto;" />
+                }
+                else
+                {
+                    <img id="poster-preview" src="#" alt="Poster Preview" style="display: none; max-width: 300px; height: auto;" />
+                }
+            </div>
+
+           
+            <div class="form-group">
+                <label asp-for="MovieViewModel.PosterPath" class="control-label"></label>
+                <input asp-for="MovieViewModel.PosterPath" class="form-control" id="PosterPath" readonly />
+                <span asp-validation-for="MovieViewModel.PosterPath" class="text-danger"></span>
+            </div>
+
+            
+            <div class="form-group">
+                <label asp-for="MovieViewModel.Description" class="control-label"></label>
+                <textarea asp-for="MovieViewModel.Description" class="form-control"></textarea>
+                <span asp-validation-for="MovieViewModel.Description" class="text-danger"></span>
+            </div>
+
+            
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        function previewFile() {
+            var preview = document.getElementById('poster-preview');
+            var fileInput = document.querySelector('input[type=file]');
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                preview.src = reader.result;
+                preview.style.display = 'block';
+
+                // Обновляем поле PosterPath
+                var filePathInput = document.getElementById('PosterPath');
+                filePathInput.value = `/images/${file.name}`;
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+}

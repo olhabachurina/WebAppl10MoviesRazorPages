@@ -1,0 +1,107 @@
+﻿@page
+@model IndexModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Movie Screen - WebAppl10MoviesRazorPages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+   
+</head>
+<body>
+    <div id="curtains">
+        <div id="left-curtain"></div>
+        <div id="right-curtain"></div>
+    </div>
+
+    <h1>@ViewData["Title"]</h1>
+    <div class="text-center mb-4">
+        <a asp-page="./Create" class="btn btn-success">Create New Movie</a>
+    </div>
+    <div class="search-container">
+        <form method="get">
+            <input type="text" name="searchTitle" placeholder="Search by Title..." value="@Model.SearchTitle" />
+            <input type="text" name="searchYear" placeholder="Search by Year..." value="@Model.SearchYear" />
+            <select name="searchGenre">
+                <option value="">All Genres</option>
+                @foreach (var genre in Model.Genres)
+                {
+                    <option value="@genre" selected="@(Model.SearchGenre == genre ? "selected" : null)">@genre</option>
+                }
+            </select>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="screen-container">
+        <div id="screen-content" class="screen-content">
+            <div id="image-container" class="screen-placeholder">
+                Hover over a movie below to view it here
+            </div>
+            <div class="screen-buttons">
+                <a class="btn" id="edit-button">Edit</a>
+                <a class="btn" id="details-button">Details</a>
+                <a class="btn" id="delete-button">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        @foreach (var item in Model.Movie)
+        {
+            <div class="movie-card" onmouseover="loadMovie('@Url.Content(item.PosterPath)', '@item.Id', '@item.Title')">
+                @if (!string.IsNullOrEmpty(item.PosterPath))
+                {
+                    <img class="movie-poster" src="@Url.Content(item.PosterPath)" alt="@item.Title" loading="lazy" />
+                }
+                <div class="movie-title">@item.Title</div>
+            </div>
+        }
+    </div>
+
+    <script>
+        function loadMovie(posterPath, movieId, title) {
+            const imageContainer = document.getElementById('image-container');
+            const editButton = document.getElementById('edit-button');
+            const detailsButton = document.getElementById('details-button');
+            const deleteButton = document.getElementById('delete-button');
+
+            
+            if (!imageContainer.querySelector('img')) {
+                const img = document.createElement('img');
+                img.src = posterPath;
+                img.alt = title;
+                img.style.opacity = '0';
+                imageContainer.innerHTML = '';  
+                imageContainer.appendChild(img);
+                setTimeout(() => img.style.opacity = '1', 50); 
+            } else {
+                const img = imageContainer.querySelector('img');
+                img.style.opacity = '0';
+                setTimeout(() => {
+                    img.src = posterPath;
+                    img.alt = title;
+                    img.style.opacity = '1';
+                }, 300); 
+            }
+
+            
+            editButton.href = `/Edit?id=${movieId}`;
+            detailsButton.href = `/Details?id=${movieId}`;
+            deleteButton.href = `/Delete?id=${movieId}`;
+        }
+
+        window.onload = function () {
+            setTimeout(function () {
+                document.getElementById("left-curtain").style.transform = "translateX(-100%)";
+                document.getElementById("right-curtain").style.transform = "translateX(100%)";
+                setTimeout(function () {
+                    document.getElementById("curtains").style.display = "none";
+                }, 2000); // Время, чтобы шторы полностью открылись
+            }, 500); // Задержка перед началом анимации открытия
+        };
+    </script>
+</body>
+</html>
